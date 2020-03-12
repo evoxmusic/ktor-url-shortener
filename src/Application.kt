@@ -50,7 +50,7 @@ data class Stat(val clicksOverTime: MutableList<Date> = mutableListOf())
 
 // Response object
 data class Response(val originalURL: String, private val id: String, val stat: Stat = Stat()) {
-    val shortURL: String = "http://localhost:8080/$id"
+    val shortURL: String = "${System.getenv("QOVERY_APPLICATION_API_HOST")}/$id"
 }
 
 object RequestTable : Table("request") {
