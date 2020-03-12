@@ -2,6 +2,8 @@ package com.qovery.oss
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -15,6 +17,12 @@ import io.ktor.response.respondRedirect
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.`java-time`.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
@@ -45,8 +53,39 @@ data class Response(val originalURL: String, private val id: String, val stat: S
     val shortURL: String = "http://localhost:8080/$id"
 }
 
+object RequestTable : Table("request") {
+    val id = varchar("id", 32)
+    val originalURL = varchar("original_url", 2048)
+    override val primaryKey: PrimaryKey = PrimaryKey(id)
+}
+
+object ClickOverTimeTable : Table("click_over_time") {
+    val id = integer("id").autoIncrement()
+    val clickDate = datetime("click_date")
+    val request = reference("request_id", onDelete = ReferenceOption.CASCADE, refColumn = RequestTable.id)
+    override val primaryKey: PrimaryKey = PrimaryKey(id)
+}
+
+fun initDatabase() {
+    val config = HikariConfig().apply {
+        jdbcUrl = "jdbc:postgresql://127.0.0.1:5432/exposed"
+        username = "exposed"
+        password = "exposed"
+        driverClassName = "org.postgresql.Driver"
+    }
+
+    Database.connect(HikariDataSource(config))
+
+    transaction {
+        // create tables if they do not exist
+        SchemaUtils.createMissingTablesAndColumns(RequestTable, ClickOverTimeTable)
+    }
+}
+
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    initDatabase()
+
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
