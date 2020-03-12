@@ -3,10 +3,6 @@ application:
   project: url-shortener
   cloud_region: aws/eu-west-3
   publicly_accessible: true
-databases:
-  - type: postgresql
-    version: "11.5"
-    name: my-pql-db
 routers:
   - name: main
     routes:
