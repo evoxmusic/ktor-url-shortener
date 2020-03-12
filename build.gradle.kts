@@ -3,9 +3,19 @@ val kotlin_version: String by project
 val logback_version: String by project
 val exposed_version: String by project
 
+buildscript {
+    repositories {
+        maven("https://plugins.gradle.org/m2/")
+    }
+    dependencies {
+        classpath("com.github.jengelman.gradle.plugins:shadow:2.0.4")
+    }
+}
+
 plugins {
     application
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.3.70"
+    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 group = "com.qovery.oss"
@@ -13,6 +23,17 @@ version = "0.1.0"
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"
+}
+
+// This task will generate your fat JAR and put it in the ./build/libs/ directory
+tasks.withType<Jar> {
+    manifest {
+        attributes(
+            mapOf(
+                "Main-Class" to application.mainClassName
+            )
+        )
+    }
 }
 
 repositories {
