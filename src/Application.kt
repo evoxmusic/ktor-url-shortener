@@ -68,9 +68,9 @@ object ClickOverTimeTable : Table("click_over_time") {
 
 fun initDatabase() {
     val config = HikariConfig().apply {
-        jdbcUrl = "jdbc:postgresql://127.0.0.1:5432/exposed"
-        username = "exposed"
-        password = "exposed"
+        jdbcUrl = "jdbc:${System.getenv("QOVERY_DATABASE_MY_PQL_DB_CONNECTION_URI_WITHOUT_CREDENTIALS")}"
+        username = System.getenv("QOVERY_DATABASE_MY_PQL_DB_USERNAME")
+        password = System.getenv("QOVERY_DATABASE_MY_PQL_DB_PASSWORD")
         driverClassName = "org.postgresql.Driver"
     }
 
