@@ -1,7 +1,6 @@
 application:
   name: api
   project: url-shortener
-  cloud_region: aws/eu-west-3
   publicly_accessible: true
 routers:
   - name: main
