@@ -1,0 +1,11 @@
+---
+application:
+  name: "ktor-url-shortener"
+  project: "URLShortener"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-ktor-url-shortener"
+  routes:
+  - application_name: "ktor-url-shortener"
+    paths:
+    - "/*"
